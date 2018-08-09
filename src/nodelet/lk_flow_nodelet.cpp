@@ -52,6 +52,7 @@
 #include "std_srvs/Empty.h"
 #include "opencv_apps/LKFlowConfig.h"
 #include "opencv_apps/FlowArrayStamped.h"
+#include <opencv_apps/LKFlowInitializePoints.h"
 
 namespace opencv_apps {
 class LKFlowNodelet : public opencv_apps::Nodelet

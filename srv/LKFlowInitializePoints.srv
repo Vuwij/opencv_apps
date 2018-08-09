@@ -1,0 +1,4 @@
+opencv_apps/Point2DArrayStamped points
+---
+bool ok
+string error
