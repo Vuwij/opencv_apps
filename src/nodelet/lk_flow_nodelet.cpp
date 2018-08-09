@@ -52,7 +52,7 @@
 #include "std_srvs/Empty.h"
 #include "opencv_apps/LKFlowConfig.h"
 #include "opencv_apps/FlowArrayStamped.h"
-#include <opencv_apps/LKFlowInitializePoints.h"
+#include "opencv_apps/LKFlowInitializePoints.h"
 
 namespace opencv_apps {
 class LKFlowNodelet : public opencv_apps::Nodelet
@@ -80,6 +80,8 @@ class LKFlowNodelet : public opencv_apps::Nodelet
 
   int MAX_COUNT;
   bool needToInit;
+  opencv_apps::Point2DArrayStamped initPoints;
+
   bool nightMode;
   cv::Point2f point;
   bool addRemovePt;
@@ -160,7 +162,16 @@ class LKFlowNodelet : public opencv_apps::Nodelet
       if( needToInit )
       {
         // automatic initialization
-        cv::goodFeaturesToTrack(gray, points[1], MAX_COUNT, 0.01, 10, cv::Mat(), 3, false, 0.04);
+        if (!initPoints.points.empty()) {
+          points[1].clear();
+          for (const auto &pt : initPoints.points) {
+            points[1].push_back(cv::Point2f(pt.x, pt.y));
+          }
+          initPoints.points.clear();
+        }
+        else {
+          cv::goodFeaturesToTrack(gray, points[1], MAX_COUNT, 0.01, 10, cv::Mat(), 3, false, 0.04);
+        }
         cv::cornerSubPix(gray, points[1], subPixWinSize, cv::Size(-1,-1), termcrit);
         addRemovePt = false;
       }
@@ -252,8 +263,9 @@ class LKFlowNodelet : public opencv_apps::Nodelet
     prev_stamp_ = msg->header.stamp;
   }
 
-  bool initialize_points_cb(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response) {
+  bool initialize_points_cb(opencv_apps::LKFlowInitializePoints::Request& request, opencv_apps::LKFlowInitializePoints::Response& response) {
     needToInit = true;
+    initPoints = request.points;
     return true;
   }
 

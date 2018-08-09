@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(opencv_apps)
 
+add_compile_options(-std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS cv_bridge dynamic_reconfigure message_generation image_transport nodelet roscpp sensor_msgs)
 
 find_package(OpenCV REQUIRED)
